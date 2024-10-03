@@ -1,6 +1,6 @@
 import unreal
 
-def RenameAndFixSkeleton(source_mesh, asset)):
+def RenameAndFixSkeleton(source_mesh, asset):
 
     ####
     #   source_mesh - Source skeletal mesh to which the asset is aligned to 
