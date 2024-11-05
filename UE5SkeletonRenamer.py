@@ -89,3 +89,35 @@ def RenameAndFixSkeleton(source_mesh, asset):
 
     unreal.log("Skeleton renamer completed for " + asset)
     return
+
+def SetUniformBoneTransform(source_mesh, asset):
+    ####
+    #   source_mesh - Source skeletal mesh which
+    #   asset - Skeletal Mesh whose skeleton is changed
+    # Note: Only run this on skeletal meshes with the exact same skeleton! (might be overcautious)
+    # ToDO: Check to ensure skeletons are the same
+    ####
+    # Loading Libs
+    # load the skeleton modifier
+    source_skeleton_modifier = unreal.SkeletonModifier()
+    target_skeleton_modifier = unreal.SkeletonModifier()
+    # Source Skeletal mesh setup
+    # Set the source mesh path
+    source_skeletal_mesh_path = unreal.EditorAssetLibrary.get_path_name_for_loaded_asset(source_mesh)
+    source_skeletal_mesh = unreal.EditorAssetLibrary.load_asset(source_skeletal_mesh_path)
+    source_skeleton_modifier.set_skeletal_mesh(source_skeletal_mesh)
+
+    # Target Skeletal mesh setup
+    target_skeletal_mesh_path = unreal.EditorAssetLibrary.get_path_name_for_loaded_asset(asset)
+    target_skeletal_mesh = unreal.EditorAssetLibrary.load_asset(target_skeletal_mesh_path)
+    target_skeleton_modifier.set_skeletal_mesh(target_skeletal_mesh)
+
+    # Get a list of bones in target skeletal mesh
+    target_bones_array = target_skeleton_modifier.get_all_bone_names()
+    # Apply bone transform of source to target
+    for bone in target_bones_array:
+        source_transform = source_skeleton_modifier.get_bone_transform(bone)
+        target_skeleton_modifier.set_bone_transform(bone, source_transform, True)
+    source_skeleton_modifier.commit_skeleton_to_skeletal_mesh()
+    target_skeleton_modifier.commit_skeleton_to_skeletal_mesh()
+    return
